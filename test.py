@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Citirea datelor din CSV
-data = pd.read_excel('C:/Users/pc/Desktop/date/datetoate.xlsx')
+data = pd.read_excel('C:/Users/pc/Desktop/date/date1100.xlsx')
 
 # Selectarea caracteristicilor și a țintei
 features = ['co2_min', 'co2_max', 'co2_median', 'co2_q1', 'co2_q3', 'co2_stdev', 'co2_count',
@@ -41,15 +41,16 @@ for name, model in models.items():
     results[name] = {'MSE': mse, 'R2': r2}
     print(f"{name} - MSE: {mse}, R2: {r2}")
 
-# Vizualizarea importanței caracteristicilor pentru RandomForest
-rf_model = models['RandomForest']
-importances = rf_model.feature_importances_
-indices = np.argsort(importances)[::-1]
+data_to_predict = pd.read_excel('C:/Users/pc/Desktop/date/date_de_prezis.xlsx')
 
-# Plotarea importanței caracteristicilor
-plt.figure()
-plt.title("Importanța caracteristicilor - RandomForest")
-plt.bar(range(x.shape[1]), importances[indices], align="center")
-plt.xticks(range(x.shape[1]), x.columns[indices], rotation=90)
-plt.xlim([-1, x.shape[1]])
-plt.show()
+# Selectarea caracteristicilor pentru prezicere
+x_to_predict = data_to_predict[features]
+
+# Prezicerea pm2.5 cu fiecare model antrenat pentru noul set de date
+predictions = {}
+for name, model in models.items():
+    y_pred_new = model.predict(x_to_predict)
+    y_pred_new = np.round(y_pred_new, 0)
+    predictions[name] = y_pred_new
+    print(f"Predicțiile pentru modelul {name} pe noul set de date: {y_pred_new}")
+
